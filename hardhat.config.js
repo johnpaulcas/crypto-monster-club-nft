@@ -25,6 +25,9 @@ module.exports = {
     rinkeby: {
       url: "https://eth-rinkeby.alchemyapi.io/v2/Yt7SwaEBlKVfnkBc9XFzIuwyBZUUrfON",
     },
+    mainnet: {
+      url: "https://eth-mainnet.alchemyapi.io/v2/LN00PRwz8NaNeov1OJ6qJMOXWwQCB1-r",
+    },
   },
   etherscan: {
     apiKey: process.env.API_ETHERSCAN_KEY_LIVE

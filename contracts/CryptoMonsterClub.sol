@@ -22,15 +22,17 @@ contract CryptoMonsterClub is ERC721Enumerable, ERC721Pausable, Ownable {
     
     bool public isPreMintOpen = true;
     bool public isPublicMintOpen = false;
+    bool public canSacrifice = false;
     
     string _baseTokenURI;
-    address public portalAddress = 0x27f46c04F842636add51a2506C02bf5A6954aD9D;
+    address public portalAddress = 0x118461022A2F99EF65BeE1Dd93eF62FB49D974FC;
     
     mapping(uint => uint) public mintedPerTokenTracker;
     
     event Mint(address owner, uint tokenId);
+    event Sacrifice(address owner, uint monsterId);
     
-    constructor() ERC721("CryptoMonsterClub", "CMC") {
+    constructor() ERC721("Crypto Monster Club", "CMC") {
         MONSTER_RESERVED = MONSTER_RESERVED.sub(3);
         for (uint monster = 0; monster < 3; monster ++) {
             _safeMint(_msgSender(), totalSupply().add(1));
@@ -103,6 +105,16 @@ contract CryptoMonsterClub is ERC721Enumerable, ERC721Pausable, Ownable {
     function getReserveSupply() external view returns(uint) {
         return MONSTER_RESERVED;
     }
+    
+    function sacrifice(uint256 _monsterId) public {
+        require(canSacrifice, "CryptoMonsterClub: sacrifice monster not enable.");
+        require(
+            _isApprovedOrOwner(_msgSender(), _monsterId),
+            "CryptoMonsterClub: caller is not the owner nor approved address."
+        );
+        _burn(_monsterId);
+        emit Sacrifice(_msgSender(), _monsterId);
+    }
 
     function airdrop(address[] memory _airdropAddrs) external onlyOwner() {
         require(totalSupply().add(_airdropAddrs.length) <= MONSTER_TOTAL_SUPPLY, "CryptoMonsterClub: exceed supply.");
@@ -119,6 +131,10 @@ contract CryptoMonsterClub is ERC721Enumerable, ERC721Pausable, Ownable {
         for (uint i = 0; i < numberOfToken; i++) {
             _safeMint(_to, totalSupply().add(1));
         }
+    }
+    
+    function setCanSacrifice(bool _isCanSacrifice) external {
+        canSacrifice = _isCanSacrifice;
     }
     
     function setPreMintState(bool _isOpen) external onlyOwner() {
@@ -149,5 +165,6 @@ contract CryptoMonsterClub is ERC721Enumerable, ERC721Pausable, Ownable {
         uint balance = address(this).balance;
         payable(owner()).transfer(balance);
     }
+    
 }
 
